@@ -1,21 +1,25 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Route,
-  RouterProvider,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Form from "./components/form";
+import Success from "./components/success";
+import Hello from "./components/hello";
 
-const router = createBrowserRouter(
-  createRoutesFromElements(<Route path="/" element={<Form />}></Route>)
-);
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<Hello />} />
+      <Route path="/success" element={<Success />} />
+      <Route path="/form" element={<Form />} />
+    </Routes>
+  );
+};
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Router>
+      <App />
+    </Router>
   </React.StrictMode>
 );

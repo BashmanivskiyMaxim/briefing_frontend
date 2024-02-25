@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import "./form.css";
 
 // Структура брифу
@@ -14,12 +15,18 @@ import "./form.css";
 // 9. Додаткова інформація
 
 export default function Form() {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm();
   const [submissionId, setSubmissionId] = useState(null);
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "competitors", // Назва масиву, який міститиме дані конкурентів
+  });
   const onSubmit = async (data) => {
     try {
       const response = await fetch("http://localhost:5000/form", {
@@ -33,6 +40,7 @@ export default function Form() {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
+      navigate("/success");
 
       //const responseData = await response.json();
       //setSubmissionId(responseData._id);
@@ -47,8 +55,8 @@ export default function Form() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <h1>Розробка проекту</h1>
+    <form onSubmit={handleSubmit(onSubmit)} className="form-container">
+      <h1>Розробка веб-сайту</h1>
 
       <div>
         <label>
@@ -155,9 +163,10 @@ export default function Form() {
       </div>
       <div>
         <span>
-          Чи є у вас зараз сайт? Що вам подобається і не подобається у ньому?
+          Чи є у вас зараз подібний по функціоналу сайт? Що вам подобається і не
+          подобається у ньому?
         </span>
-        <input
+        <textarea
           {...register("product-essence", { required: "це поле обов'язкове!" })}
           type="text"
         />
@@ -167,7 +176,7 @@ export default function Form() {
           Яка кінцева мета веб-сайту? Яка його суть?(наприклад, прямі продажі,
           надання інформації про компанію, використання як вітрини товарів)
         </span>
-        <input
+        <textarea
           {...register("product-goal", { required: "це поле обов'язкове!" })}
           type="text"
         />
@@ -226,13 +235,115 @@ export default function Form() {
             </label>
           );
         })}
-        <input
-          {...register("business-niche", { required: "це поле обов'язкове!" })}
+        <span>Вкажіть цільову аудиторю вашого продукту?</span>
+        {[
+          { label: "вік 18-25", value: "вік 18-25" },
+          {
+            label: "вік 25-45",
+            value: "вік 25-45",
+          },
+          { label: "вік 45+", value: "вік 45+" },
+        ].map(({ label, value }, index) => {
+          return (
+            <label key={value + index}>
+              <span>{label}</span>
+              <input
+                {...register("business-audit", {
+                  required: true,
+                })}
+                aria-invalid={errors["free-week"] ? "true" : "false"}
+                value={value}
+                type="checkbox"
+              />
+            </label>
+          );
+        })}
+        <span>Яка ваша унікальна торговельна пропозиція?</span>
+        <textarea
+          {...register("business-unique-proposition", {
+            required: "це поле обов'язкове!",
+          })}
           type="text"
+          placeholder="Унікальна торговельна пропозиція — це перевага, яка відрізняє ваш продукт або послугу від пропозицій конкурентів. "
         />
       </div>
+      <span>Ваші конкуренти</span>
+      {fields.map((field, index) => (
+        <div className="competitor-container" key={field.id}>
+          <input
+            {...register(`competitors.${index}.name`)}
+            placeholder="Назва конкурента"
+            className="competitor-name"
+          />
+          <input
+            {...register(`competitors.${index}.best-sides`)}
+            placeholder="Його кращі сторони"
+            className="competitor-description"
+          />
+          <input
+            {...register(`competitors.${index}.worst-sides`)}
+            placeholder="Його мінуси"
+            className="competitor-description"
+          />
+          <button
+            className="remove-competitor-button"
+            type="button"
+            onClick={() => remove(index)}
+          >
+            Видалити
+          </button>
+        </div>
+      ))}
+      <button
+        className="add-competitor-button"
+        type="button"
+        onClick={() => append({})}
+      >
+        Додати конкурента
+      </button>
+      <span>Чи маєте ви готові елементи дизайну, можливо брендбук?</span>
+      <textarea
+        {...register("site-design-elements", {
+          required: "це поле обов'язкове!",
+        })}
+        type="text"
+      />
+      <span>
+        Який дизайн ви бажаєте бачити на вашому сайті(мінімалістичний,
+        креативний, корпоративний тощо)?
+      </span>
+      <textarea
+        {...register("site-design", { required: "це поле обов'язкове!" })}
+        type="text"
+      />
+      <span>
+        Які конкретні функції або модулі ви бажаєте мати на своєму сайті
+        (наприклад, контактна форма, блог, галерея зображень тощо)?
+      </span>
+      <textarea
+        {...register("site-modules", { required: "це поле обов'язкове!" })}
+        type="text"
+      />
+      <span>
+        Чи потрібна інтеграція зі сторонніми сервісами або платформами
+        (наприклад, платіжними шлюзами, соціальними медіа, CRM системами)?
+      </span>
+      <textarea
+        {...register("site-integration", { required: "це поле обов'язкове!" })}
+        type="text"
+      />
+      <span>
+        Чи маєте ви готовий контент (текст, зображення) для деяких сторінок, або
+        потрібно розробити контент разом із дизайном?
+      </span>
+      <textarea
+        {...register("site-content", { required: "це поле обов'язкове!" })}
+        type="text"
+      />
 
-      <button disabled={isSubmitting}>Відправити</button>
+      <button className="submit" disabled={isSubmitting}>
+        Відправити
+      </button>
     </form>
   );
 }
