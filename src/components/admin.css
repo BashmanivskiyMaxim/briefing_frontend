@@ -1,0 +1,53 @@
+/* form.css */
+
+/* Wrapper for the entire admin panel */
+.admin-panel {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+/* Heading style */
+.admin-panel h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Loading indicator */
+.admin-panel .loading {
+  font-size: 18px;
+  color: #333;
+}
+
+/* Table style */
+.admin-panel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Table header style */
+.admin-panel th {
+  font-weight: bold;
+  background-color: #f0f0f0;
+  padding: 10px;
+  text-align: left;
+}
+
+/* Table cell style */
+.admin-panel td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Button style */
+.admin-panel button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+/* Button hover effect */
+.admin-panel button:hover {
+  background-color: #0056b3;
+}

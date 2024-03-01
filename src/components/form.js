@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import "./form.css";
@@ -14,23 +14,52 @@ import "./form.css";
 // 8. Додаткові питання для продуктивності (просування, наповнення, що подобається, що ні)
 // 9. Додаткова інформація
 
-export default function Form() {
-  const navigate = useNavigate();
+export default function Form({ itemId }) {
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm();
-  const [submissionId, setSubmissionId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (itemId) {
+      fetchData(itemId);
+    } else {
+      setLoading(false);
+    }
+  }, [itemId]);
+
+  const navigate = useNavigate();
+
+  const fetchData = async (itemId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/form/${itemId}`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      console.log(itemId, "itemId");
+      const formData = await response.json();
+      Object.entries(formData.data).forEach(([key, value]) => {
+        setValue(key, value);
+      });
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching form data:", error);
+      setLoading(false);
+    }
+  };
+
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "competitors", // Назва масиву, який міститиме дані конкурентів
+    name: "competitors-object",
   });
   const onSubmit = async (data) => {
     try {
-      const response = await fetch("http://localhost:5000/form", {
-        method: "POST",
+      const response = await fetch(`http://localhost:5000/form/${itemId}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -41,21 +70,14 @@ export default function Form() {
         throw new Error("Network response was not ok");
       }
       navigate("/success");
-
-      //const responseData = await response.json();
-      //setSubmissionId(responseData._id);
     } catch (error) {
       console.error("There was an error!", error);
-      // Handle error state
     }
   };
 
-  if (submissionId) {
-    return <p>Thank you! Submission Id: {submissionId}</p>;
-  }
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form-container">
+      {loading ? "Loading..." : null}
       <h1>Розробка веб-сайту</h1>
 
       <div>
@@ -84,7 +106,7 @@ export default function Form() {
       <div>
         <label>
           <span>Вкажіть посилання на соціальні мережі для зв'язку</span>
-          <input {...register("messenger")} type="text" />
+          <input {...register("messanger-url")} type="text" />
         </label>
       </div>
 
@@ -271,17 +293,17 @@ export default function Form() {
       {fields.map((field, index) => (
         <div className="competitor-container" key={field.id}>
           <input
-            {...register(`competitors.${index}.name`)}
+            {...register(`competitors-object.${index}.name`)}
             placeholder="Назва конкурента"
             className="competitor-name"
           />
           <input
-            {...register(`competitors.${index}.best-sides`)}
+            {...register(`competitors-object.${index}.best-sides`)}
             placeholder="Його кращі сторони"
             className="competitor-description"
           />
           <input
-            {...register(`competitors.${index}.worst-sides`)}
+            {...register(`competitors-object.${index}.worst-sides`)}
             placeholder="Його мінуси"
             className="competitor-description"
           />
