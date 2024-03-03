@@ -15,7 +15,7 @@ const AdminAuth = () => {
   const onSubmit = async (data) => {
     try {
       const response = await fetch(
-        "http://localhost:5000/user/find-by-username-and-password",
+        `https://lab1pm-production.up.railway.app/user/find-by-username-and-password`,
         {
           method: "POST",
           headers: {

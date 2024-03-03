@@ -36,7 +36,9 @@ export default function Form({ itemId }) {
 
   const fetchData = async (itemId) => {
     try {
-      const response = await fetch(`http://localhost:5000/form/${itemId}`);
+      const response = await fetch(
+        `https://lab1pm-production.up.railway.app/form/${itemId}`
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -58,13 +60,18 @@ export default function Form({ itemId }) {
   });
   const onSubmit = async (data) => {
     try {
-      const response = await fetch(`http://localhost:5000/form/${itemId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data }),
-      });
+      const response = await fetch(
+        `https://lab1pm-production.up.railway.app/form/${
+          itemId ? itemId : "65e237a428c4880bb21b377a"
+        }`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ data }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -80,7 +87,7 @@ export default function Form({ itemId }) {
       {loading ? "Loading..." : null}
       <h1>Розробка веб-сайту</h1>
 
-      <div>
+      <div className="question">
         <label>
           <span>Як до Вас звертатись?</span>
           <input
@@ -96,21 +103,21 @@ export default function Form({ itemId }) {
         )}
       </div>
 
-      <div>
+      <div className="question">
         <label>
           <span>Ваш номер телефону</span>
           <input {...register("number-phone")} type="tel" />
         </label>
       </div>
 
-      <div>
+      <div className="question">
         <label>
           <span>Вкажіть посилання на соціальні мережі для зв'язку</span>
           <input {...register("messanger-url")} type="text" />
         </label>
       </div>
 
-      <label>
+      <label className="question">
         <span>
           Який проміжок часу вам підходить для звернень або отримання
           повідомлень?
@@ -137,7 +144,7 @@ export default function Form({ itemId }) {
         )}
       </label>
 
-      <div>
+      <div className="question">
         <span>В які дні тижня ви б хотіли займатись проектом?</span>
         {[
           { label: "Понеділок", value: "monday" },
@@ -166,7 +173,7 @@ export default function Form({ itemId }) {
           <p role="alert">{errors["free-week"]?.message}</p>
         )}
       </div>
-      <div>
+      <div className="question">
         <span>
           На який термін розробки проекту ви розраховуєте? (Вкажіть кінцеву дату
           або кількість тижнів, необхідних для завершення проекту).
@@ -176,14 +183,51 @@ export default function Form({ itemId }) {
           type="text"
         />
       </div>
-      <div>
+      <div className="question">
         <span>Назва продукту, для якого створюється веб-сайт</span>
         <input
           {...register("product-name", { required: "це поле обов'язкове!" })}
           type="text"
         />
       </div>
-      <div>
+      <div className="question" style={{ display: "flex", flexWrap: "wrap" }}>
+        <span style={{ marginBottom: "5px" }}>
+          Який тип сайту вам потрібен?
+        </span>
+        {[
+          { label: "Бізнес сайт", value: "Бізнес сайт" },
+          { label: "eCommerce сайт - онлайн магазин", value: "eCommerce сайт" },
+          { label: "Маркетплейс", value: "Маркетплейс" },
+          { label: "Блог", value: "Блог" },
+          { label: "Портфоліо", value: "Портфоліо" },
+          { label: "Персональний сайт", value: "Персональний сайт" },
+          { label: "Форум", value: "Форум" },
+          { label: "Соціальна мережа", value: "Соціальна мережа" },
+          { label: "Інше", value: "Інше" },
+        ].map(({ label, value }, index) => (
+          <label key={value + index}>
+            <input
+              {...register("type-website", {
+                required: true,
+              })}
+              value={value}
+              type="radio"
+              style={{ marginRight: "5px" }}
+            />
+            <span>{label}</span>
+          </label>
+        ))}
+        {errors["free-week"] && (
+          <p role="alert">{errors["free-week"]?.message}</p>
+        )}
+      </div>
+
+      <div className="question">
+        <span>Якщо ви обрали "Інше", вкажіть який тип сайту вам потрібен</span>
+        <textarea {...register("type-website-other")} type="text" />
+      </div>
+
+      <div className="question">
         <span>
           Чи є у вас зараз подібний по функціоналу сайт? Що вам подобається і не
           подобається у ньому?
@@ -193,7 +237,7 @@ export default function Form({ itemId }) {
           type="text"
         />
       </div>
-      <div>
+      <div className="question">
         <span>
           Яка кінцева мета веб-сайту? Яка його суть?(наприклад, прямі продажі,
           надання інформації про компанію, використання як вітрини товарів)
@@ -203,7 +247,7 @@ export default function Form({ itemId }) {
           type="text"
         />
       </div>
-      <div>
+      <div className="question">
         <span>Чи маєте ви додаткові цілі?</span>
         <div class="tooltip">
           <i aria-hidden="true">Підказка...</i>
@@ -228,7 +272,7 @@ export default function Form({ itemId }) {
           type="text"
         />
       </div>
-      <div>
+      <div className="question">
         <span>
           Вкажіть особливості бізнес-ніші, в якій ви працюєте. Що визначає
           конкуренцію в ніші?
@@ -257,6 +301,8 @@ export default function Form({ itemId }) {
             </label>
           );
         })}
+      </div>
+      <div className="question">
         <span>Вкажіть цільову аудиторю вашого продукту?</span>
         {[
           { label: "вік 18-25", value: "вік 18-25" },
@@ -280,6 +326,8 @@ export default function Form({ itemId }) {
             </label>
           );
         })}
+      </div>
+      <div className="question">
         <span>Яка ваша унікальна торговельна пропозиція?</span>
         <textarea
           {...register("business-unique-proposition", {
@@ -289,33 +337,35 @@ export default function Form({ itemId }) {
           placeholder="Унікальна торговельна пропозиція — це перевага, яка відрізняє ваш продукт або послугу від пропозицій конкурентів. "
         />
       </div>
-      <span>Ваші конкуренти</span>
-      {fields.map((field, index) => (
-        <div className="competitor-container" key={field.id}>
-          <input
-            {...register(`competitors-object.${index}.name`)}
-            placeholder="Назва конкурента"
-            className="competitor-name"
-          />
-          <input
-            {...register(`competitors-object.${index}.best-sides`)}
-            placeholder="Його кращі сторони"
-            className="competitor-description"
-          />
-          <input
-            {...register(`competitors-object.${index}.worst-sides`)}
-            placeholder="Його мінуси"
-            className="competitor-description"
-          />
-          <button
-            className="remove-competitor-button"
-            type="button"
-            onClick={() => remove(index)}
-          >
-            Видалити
-          </button>
-        </div>
-      ))}
+      <div className="question">
+        <span>Ваші конкуренти</span>
+        {fields.map((field, index) => (
+          <div className="competitor-container" key={field.id}>
+            <input
+              {...register(`competitors-object.${index}.name`)}
+              placeholder="Назва конкурента"
+              className="competitor-name"
+            />
+            <input
+              {...register(`competitors-object.${index}.best-sides`)}
+              placeholder="Його кращі сторони"
+              className="competitor-description"
+            />
+            <input
+              {...register(`competitors-object.${index}.worst-sides`)}
+              placeholder="Його мінуси"
+              className="competitor-description"
+            />
+            <button
+              className="remove-competitor-button"
+              type="button"
+              onClick={() => remove(index)}
+            >
+              Видалити
+            </button>
+          </div>
+        ))}
+      </div>
       <button
         className="add-competitor-button"
         type="button"
@@ -323,45 +373,57 @@ export default function Form({ itemId }) {
       >
         Додати конкурента
       </button>
-      <span>Чи маєте ви готові елементи дизайну, можливо брендбук?</span>
-      <textarea
-        {...register("site-design-elements", {
-          required: "це поле обов'язкове!",
-        })}
-        type="text"
-      />
-      <span>
-        Який дизайн ви бажаєте бачити на вашому сайті(мінімалістичний,
-        креативний, корпоративний тощо)?
-      </span>
-      <textarea
-        {...register("site-design", { required: "це поле обов'язкове!" })}
-        type="text"
-      />
-      <span>
-        Які конкретні функції або модулі ви бажаєте мати на своєму сайті
-        (наприклад, контактна форма, блог, галерея зображень тощо)?
-      </span>
-      <textarea
-        {...register("site-modules", { required: "це поле обов'язкове!" })}
-        type="text"
-      />
-      <span>
-        Чи потрібна інтеграція зі сторонніми сервісами або платформами
-        (наприклад, платіжними шлюзами, соціальними медіа, CRM системами)?
-      </span>
-      <textarea
-        {...register("site-integration", { required: "це поле обов'язкове!" })}
-        type="text"
-      />
-      <span>
-        Чи маєте ви готовий контент (текст, зображення) для деяких сторінок, або
-        потрібно розробити контент разом із дизайном?
-      </span>
-      <textarea
-        {...register("site-content", { required: "це поле обов'язкове!" })}
-        type="text"
-      />
+      <div className="question">
+        <span>Чи маєте ви готові елементи дизайну, можливо брендбук?</span>
+        <textarea
+          {...register("site-design-elements", {
+            required: "це поле обов'язкове!",
+          })}
+          type="text"
+        />
+      </div>
+      <div className="question">
+        <span>
+          Який дизайн ви бажаєте бачити на вашому сайті(мінімалістичний,
+          креативний, корпоративний тощо)?
+        </span>
+        <textarea
+          {...register("site-design", { required: "це поле обов'язкове!" })}
+          type="text"
+        />
+      </div>
+      <div className="question">
+        <span>
+          Які конкретні функції або модулі ви бажаєте мати на своєму сайті
+          (наприклад, контактна форма, блог, галерея зображень тощо)?
+        </span>
+        <textarea
+          {...register("site-modules", { required: "це поле обов'язкове!" })}
+          type="text"
+        />
+      </div>
+      <div className="question">
+        <span>
+          Чи потрібна інтеграція зі сторонніми сервісами або платформами
+          (наприклад, платіжними шлюзами, соціальними медіа, CRM системами)?
+        </span>
+        <textarea
+          {...register("site-integration", {
+            required: "це поле обов'язкове!",
+          })}
+          type="text"
+        />
+      </div>
+      <div className="question">
+        <span>
+          Чи маєте ви готовий контент (текст, зображення) для деяких сторінок,
+          або потрібно розробити контент разом із дизайном?
+        </span>
+        <textarea
+          {...register("site-content", { required: "це поле обов'язкове!" })}
+          type="text"
+        />
+      </div>
 
       <button className="submit" disabled={isSubmitting}>
         Відправити
